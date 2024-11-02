@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  dev-db:
+    image: postgres:17
+    ports:
+      - 5434:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: nest
+    networks:
+      - optimus-prime
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+networks:
+  optimus-prime:
+
+volumes:
+  postgres_data:
