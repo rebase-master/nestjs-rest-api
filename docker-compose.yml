@@ -14,6 +14,19 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  test-db:
+    image: postgres:17
+    ports:
+      - 5435:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: nest
+    networks:
+      - optimus-prime
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
 networks:
   optimus-prime:
 
