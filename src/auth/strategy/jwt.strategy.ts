@@ -1,6 +1,6 @@
 import {PassportStrategy} from "@nestjs/passport";
 import {ExtractJwt, Strategy} from "passport-jwt";
-import {Injectable} from "@nestjs/common";
+import {Injectable, UnauthorizedException} from "@nestjs/common";
 import {ConfigService} from "@nestjs/config";
 import {PrismaService} from "../../prisma/prisma.service";
 
@@ -21,16 +21,10 @@ export class JwtStrategy extends PassportStrategy(
 
 	// This method is called automatically and is used
 	// for validate the received payload.
-	async validate(payload: {
-		sub: number,
-		email: string;
-	}) {
-		const user = await this.prisma.user.findUnique({
-			where: {
-				id: payload.sub,
-			},
-		});
-		delete user.hash;
-		return user
+	async validate(payload: { sub: number; email: string }) {
+		const user = await this.prisma.user.findUnique({ where: { id: payload.sub } });
+		if (!user) throw new UnauthorizedException();   // deleted user + valid token → 401, not a TypeError
+		const { hash, ...safeUser } = user;              // don't mutate the Prisma result
+		return safeUser;                                 // becomes req.user
 	}
 }
